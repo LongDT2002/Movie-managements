@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var authRouter = require('./routes/auth');
 
 var app = express();
 
@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -43,11 +43,14 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-mongoose.connect(
-  process.env.DB_CONNECT,
-  { useUnifiedTopology: true, useNewUrlParser: true },
-  () => console.log('DB Connected')
-);
+(async () => {
+    try {
+        await mongoose.connect(process.env.DB_CONNECTION);
+        console.log('Connected to DB!');
+    } catch (err) {
+        console.log('Error connecting to DB:', err);
+    }
+})();
 
 
 module.exports = app;
